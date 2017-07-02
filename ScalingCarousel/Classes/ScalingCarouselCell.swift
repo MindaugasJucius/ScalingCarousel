@@ -23,18 +23,14 @@ open class ScalingCarouselCell: UICollectionViewCell {
     // MARK: - IBOutlets
     
     // This property should be connected to the main cell subview
-    @IBOutlet public var mainView: UIView!
     
     private struct InternalConstants {
         static let alphaSmallestValue: CGFloat = 0.85
         static let scaleDivisor: CGFloat = 10.0
     }
     
-    // MARK: - Overrides
-    
     override open func layoutSubviews() {
         super.layoutSubviews()
-        
         guard let carouselView = superview as? ScalingCarouselView else { return }
         
         scale(withCarouselInset: carouselView.inset)
@@ -42,8 +38,8 @@ open class ScalingCarouselCell: UICollectionViewCell {
     
     override open func prepareForReuse() {
         super.prepareForReuse()
-        mainView.transform = CGAffineTransform.identity
-        mainView.alpha = 1.0
+        contentView.transform = CGAffineTransform.identity
+        contentView.alpha = 1.0
     }
     
     /// Scale the cell when it is scrolled
@@ -53,10 +49,8 @@ open class ScalingCarouselCell: UICollectionViewCell {
     ///             expressed as a value between 0.0 and 1.0
     open func scale(withCarouselInset carouselInset: CGFloat,
                     scaleMinimum: CGFloat = 0.9) {
-        
         // Ensure we have a superView, and mainView
-        guard let superview = superview,
-            let mainView = mainView else { return }
+        guard let superview = superview else { return }
         
         // Get our absolute origin value
         let originX = superview.convert(frame, to: nil).origin.x
@@ -73,16 +67,8 @@ open class ScalingCarouselCell: UICollectionViewCell {
         let scaleValue = scaleMinimum
             + (percentageScale/InternalConstants.scaleDivisor)
         
-        let alphaValue = InternalConstants.alphaSmallestValue
-            + (percentageScale/InternalConstants.scaleDivisor)
-        
         let affineIdentity = CGAffineTransform.identity
         
-        // Scale our mainView and set it's alpha value
-        mainView.transform = affineIdentity.scaledBy(x: scaleValue, y: scaleValue)
-        mainView.alpha = alphaValue
-        
-        // ..also..round the corners
-        mainView.layer.cornerRadius = 20
+        contentView.transform = affineIdentity.scaledBy(x: scaleValue, y: scaleValue)
     }
 }
